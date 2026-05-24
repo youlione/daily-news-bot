@@ -1,33 +1,39 @@
-name: 每日全球热点新闻推送
-
+name: 每日热点新闻自动更新
 on:
   schedule:
-    - cron: "0 0 * * *"  # 每天北京时间 8 点
-  workflow_dispatch:     # 允许手动测试运行
-# 加上这一段就解决了
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
 jobs:
-  build-and-publish:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: 拉取代码
-        uses: actions/checkout@v5
-
-      - name: 设置 Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.11'
+      # 👇 全部升级到支持 Node.js 24 的最新版 → 无警告
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
 
       - name: 安装依赖
         run: pip install requests
 
-      - name: 抓取全球热点新闻
+      # 👇 你的脚本真实路径在这里
+      - name: 运行新闻脚本
         run: python .github/workflows/news_bot.py
 
-      - name: 发布到 GitHub Issues
-        uses: peter-evans/create-issue-from-file@v5
+      # 👇 升级到支持 Node.js 24 的 v6 版，警告消失
+      - name: 创建 issue
+        uses: peter-evans/create-issue-from-file@v6
         with:
-          title: "🔥 全球热点新闻日报"
+          title: 📰 每日热点新闻更新
           content-filepath: ./news.md
-          labels: news,auto
+
+      - name: 提交更新
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add news.md
+          git diff --quiet || git commit -m "📢 自动更新每日热点新闻"
+          git push
