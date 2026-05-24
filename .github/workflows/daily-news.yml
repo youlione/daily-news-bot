@@ -19,6 +19,10 @@ jobs:
       - name: 安装依赖
         run: pip install requests
         
+      # 👇 你的脚本真实路径在这里
+      - name: 运行新闻脚本
+        run: python .github/workflows/news_bot.py
+
       # 发送新闻到你的邮箱
       - name: 发送邮件到 youlione@126.com
         uses: dawidd6/action-send-mail@v4
@@ -33,10 +37,6 @@ jobs:
           from: GitHub Actions News Bot
           attachments: news.md
           convert_markdown: true
-          
-      # 👇 你的脚本真实路径在这里
-      - name: 运行新闻脚本
-        run: python .github/workflows/news_bot.py
 
       # 👇 升级到支持 Node.js 24 的 v6 版，警告消失
       - name: 创建 issue
