@@ -23,7 +23,7 @@ jobs:
         run: pip install requests
 
       - name: 抓取全球热点新闻
-        run: python news_bot.py
+        run: python .github/workflows/news_bot.py
 
       - name: 发布到 GitHub Issues
         uses: peter-evans/create-issue-from-file@v5
