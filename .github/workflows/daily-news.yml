@@ -1,0 +1,31 @@
+name: 每日全球热点新闻推送
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # 每天北京时间 8 点
+  workflow_dispatch:     # 允许手动测试运行
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安装依赖
+        run: pip install requests
+
+      - name: 抓取全球热点新闻
+        run: python news_bot.py
+
+      - name: 发布到 GitHub Issues
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: "🔥 全球热点新闻日报"
+          content-filepath: ./news.md
+          labels: news,auto
