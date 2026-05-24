@@ -18,7 +18,22 @@ jobs:
 
       - name: 安装依赖
         run: pip install requests
-
+        
+      # 发送新闻到你的邮箱
+      - name: 发送邮件到 youlione@126.com
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.126.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: ?? 每日热点新闻
+          body: 今日热点新闻已更新，内容请看附件??
+          to: youlione@126.com
+          from: GitHub Actions News Bot
+          attachments: news.md
+          convert_markdown: true
+          
       # 👇 你的脚本真实路径在这里
       - name: 运行新闻脚本
         run: python .github/workflows/news_bot.py
